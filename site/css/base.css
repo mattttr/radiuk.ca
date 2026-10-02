@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Matt Radiuk 95: design tokens, reset and color schemes
+   ========================================================================== */
+
+:root {
+  /* Win95 system colors (the "Windows Standard" scheme) */
+  --face: #c0c0c0;
+  --face-light: #dfdfdf;
+  --hilite: #ffffff;
+  --shadow: #808080;
+  --dark: #0a0a0a;
+  --text: #000000;
+  --text-disabled: #808080;
+  --field: #ffffff;
+  --field-text: #000000;
+  --select: #000080;
+  --select-text: #ffffff;
+  --title-a: #000080;
+  --title-b: #1084d0;
+  --title-text: #ffffff;
+  --title-inactive-a: #808080;
+  --title-inactive-b: #b5b5b5;
+  --title-inactive-text: #dfdfdf;
+  --desktop: #008080;
+  --desktop-text: #ffffff;
+  --link: #0000ee;
+  --tooltip: #ffffe1;
+
+  /* Bevels: the whole 3D look is just stacked inset shadows */
+  --bevel-raised:
+    inset -1px -1px var(--dark), inset 1px 1px var(--hilite),
+    inset -2px -2px var(--shadow), inset 2px 2px var(--face-light);
+  --bevel-pressed:
+    inset -1px -1px var(--hilite), inset 1px 1px var(--dark),
+    inset -2px -2px var(--face-light), inset 2px 2px var(--shadow);
+  --bevel-window:
+    inset -1px -1px var(--dark), inset 1px 1px var(--face-light),
+    inset -2px -2px var(--shadow), inset 2px 2px var(--hilite);
+  --bevel-field:
+    inset -1px -1px var(--hilite), inset 1px 1px var(--shadow),
+    inset -2px -2px var(--face-light), inset 2px 2px var(--dark);
+  --bevel-status: inset -1px -1px var(--hilite), inset 1px 1px var(--shadow);
+  --bevel-thin-raised: inset -1px -1px var(--shadow), inset 1px 1px var(--hilite);
+
+  /* A modern touch: soft depth under floating things */
+  --float-shadow: 0 14px 34px -10px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.18);
+
+  --dither: repeating-conic-gradient(var(--face) 0% 25%, var(--hilite) 0% 50%) 0 0 / 2px 2px;
+
+  --font-ui: "Pixelify Sans", "Tahoma", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "IBM Plex Mono", "Consolas", ui-monospace, monospace;
+  --font-dos: "VT323", "IBM Plex Mono", ui-monospace, monospace;
+
+  --ui-size: 14px;
+  --taskbar-h: 38px;
+  --titlebar-h: 26px;
+  --icon-size: 48px;
+
+  --ease-out: cubic-bezier(0.2, 0.9, 0.25, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  color-scheme: light;
+}
+
+/* ---------- Color schemes (Display Properties > Appearance) ---------- */
+
+:root[data-scheme="desert"] {
+  --face: #d5ccbb; --face-light: #e6dfd2; --shadow: #a29475; --select: #008080;
+  --title-a: #008080; --title-b: #4fb0a8; --title-inactive-a: #a29475; --title-inactive-b: #c9bfa8;
+  --desktop: #a29475;
+}
+:root[data-scheme="eggplant"] {
+  --face: #90b0a8; --face-light: #b4cdc7; --shadow: #587068; --select: #5a4e78;
+  --title-a: #5a4e78; --title-b: #8c7fb3; --title-inactive-a: #587068; --title-inactive-b: #90a59f;
+  --desktop: #5a4e78;
+}
+:root[data-scheme="rainy"] {
+  --face: #c0c8d0; --face-light: #dde3e9; --shadow: #7d8a98; --select: #4f6074;
+  --title-a: #4f6074; --title-b: #8a9cb1; --title-inactive-a: #7d8a98; --title-inactive-b: #aeb8c3;
+  --desktop: #4f6074;
+}
+:root[data-scheme="spruce"] {
+  --face: #a8c8a8; --face-light: #c8e0c8; --shadow: #5c805c; --select: #2e5e3e;
+  --title-a: #2e5e3e; --title-b: #5f9c6e; --title-inactive-a: #5c805c; --title-inactive-b: #94b894;
+  --desktop: #3d6b4a;
+}
+:root[data-scheme="pumpkin"] {
+  --face: #e8c89a; --face-light: #f4dfbf; --shadow: #a87a3e; --select: #b35a00;
+  --title-a: #b35a00; --title-b: #f29a3c; --title-inactive-a: #a87a3e; --title-inactive-b: #d6b07a;
+  --desktop: #f98a5f;
+}
+:root[data-scheme="midnight"] {
+  --face: #2b2d42; --face-light: #3b3e5a; --hilite: #5a5e86; --shadow: #15161f; --dark: #000000;
+  --text: #e7e8f5; --text-disabled: #6d7090; --field: #12131c; --field-text: #e7e8f5;
+  --select: #7c5cff; --select-text: #ffffff;
+  --title-a: #7c5cff; --title-b: #00c2c7; --title-inactive-a: #3b3e5a; --title-inactive-b: #4d5175;
+  --title-inactive-text: #9a9dbf;
+  --desktop: #10111a; --link: #8fb8ff; --tooltip: #2b2d42;
+  color-scheme: dark;
+}
+:root[data-scheme="contrast"] {
+  --face: #000000; --face-light: #000000; --hilite: #ffffff; --shadow: #ffffff; --dark: #ffffff;
+  --text: #ffffff; --text-disabled: #00ff00; --field: #000000; --field-text: #ffffff;
+  --select: #800080; --select-text: #ffffff;
+  --title-a: #800080; --title-b: #800080; --title-inactive-a: #008000; --title-inactive-b: #008000;
+  --title-inactive-text: #ffffff;
+  --desktop: #000000; --link: #ffff00; --tooltip: #000000;
+  color-scheme: dark;
+}
+
+/* ---------- Reset ---------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--desktop);
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--ui-size);
+  line-height: 1.25;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+img, svg, canvas { display: block; }
+a { color: var(--link); }
+h1, h2, h3, h4, p, ul, ol, figure { margin: 0; }
+ul, ol { padding: 0; list-style: none; }
+[hidden] { display: none !important; }
+
+.px-icon { image-rendering: pixelated; flex: none; }
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+::selection { background: var(--select); color: var(--select-text); }
+
+/* No-JS fallback */
+.noscript {
+  max-width: 640px; margin: 10vh auto; padding: 24px; background: #fff; color: #000;
+  font-family: var(--font-body); line-height: 1.6; box-shadow: var(--bevel-window);
+}
+.noscript h1 { font-family: var(--font-ui); margin-bottom: 8px; }
+.noscript p { margin: 12px 0; }
+
+@media (max-width: 700px) {
+  :root {
+    --taskbar-h: 48px;
+    --titlebar-h: 34px;
+    --icon-size: 48px;
+    --ui-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

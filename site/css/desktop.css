@@ -1,0 +1,507 @@
+/* ==========================================================================
+   Desktop shell: wallpaper, icons, taskbar, start menu, boot, BSOD & friends
+   ========================================================================== */
+
+.desktop {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--desktop);
+  transition: background-color 0.4s;
+}
+
+/* ---------- Wallpaper ---------- */
+
+.wallpaper { position: absolute; inset: 0; z-index: 0; }
+.wallpaper canvas { width: 100% !important; height: 100% !important; }
+.wallpaper.is-image { background-size: cover; background-position: center; }
+.wallpaper.is-tile { background-repeat: repeat; background-size: auto; image-rendering: pixelated; }
+
+/* Subtle CRT vignette + scanlines that keep the flat teal from feeling dead */
+.desktop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 0, 0, 0.22) 100%),
+    repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.035) 0 1px, transparent 1px 3px);
+}
+:root[data-crt="off"] .desktop::after { display: none; }
+
+/* ---------- Hero ("wallpaper text") ---------- */
+
+.hero {
+  position: absolute;
+  z-index: 0;
+  right: clamp(20px, 4vw, 64px);
+  bottom: calc(var(--taskbar-h) + clamp(18px, 4vh, 48px));
+  max-width: min(820px, 64vw);
+  color: var(--desktop-text);
+  text-align: right;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.8s 0.2s, transform 0.8s 0.2s var(--ease-out);
+}
+.is-ready .hero { opacity: 1; transform: none; }
+.hero-kicker { font: 22px/1 var(--font-dos); opacity: 0.8; margin-bottom: 6px; }
+.hero-name {
+  font: 700 clamp(48px, 7.5vw, 116px)/0.92 var(--font-ui);
+  letter-spacing: -1px;
+  text-shadow: 5px 5px 0 rgba(0, 0, 0, 0.25);
+}
+.hero-role {
+  margin-top: 12px;
+  font: clamp(26px, 3vw, 40px)/1 var(--font-dos);
+  color: #fffbd0;
+  text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
+}
+.hero-sub { margin-top: 10px; font: 500 16px/1.4 var(--font-body); opacity: 0.8; letter-spacing: 0.3px; }
+.caret { animation: blink 1s steps(1) infinite; margin-left: 2px; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- Desktop icons ---------- */
+
+.desktop-icons {
+  position: absolute;
+  inset: 0 0 var(--taskbar-h) 0;
+  z-index: 1;
+  pointer-events: none;
+}
+.desk-icon {
+  position: absolute;
+  width: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 2px 4px;
+  pointer-events: auto;
+  user-select: none;
+  touch-action: none;
+  cursor: default;
+  outline: none;
+  transition: left 0.3s var(--ease-out), top 0.3s var(--ease-out);
+}
+.desk-icon.is-dragging { transition: none; z-index: 5; opacity: 0.75; }
+.di-img { position: relative; width: var(--icon-size); height: var(--icon-size); }
+.di-img > svg, .di-img > img { width: 100%; height: 100%; image-rendering: pixelated; }
+.di-img::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  background: repeating-conic-gradient(var(--select) 0% 25%, transparent 0% 50%) 0 0 / 2px 2px;
+  -webkit-mask: var(--mask) center / contain no-repeat;
+  mask: var(--mask) center / contain no-repeat;
+}
+.desk-icon.is-selected .di-img::after { opacity: 1; }
+.di-label {
+  max-width: 100%;
+  padding: 1px 4px;
+  color: var(--desktop-text);
+  font-size: 13px;
+  line-height: 1.2;
+  text-align: center;
+  text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.55);
+  overflow-wrap: break-word;
+}
+.desk-icon.is-selected .di-label { background: var(--select); color: var(--select-text); text-shadow: none; }
+.desk-icon:focus-visible .di-label { outline: 1px dotted #fff; }
+.desk-icon:hover .di-img { animation: icon-hop 0.35s var(--ease-spring); }
+@keyframes icon-hop { 40% { transform: translateY(-3px); } }
+
+.marquee {
+  position: absolute;
+  z-index: 4;
+  border: 1px dotted #fff;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.snap-preview {
+  position: absolute;
+  z-index: 3;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(2px);
+  pointer-events: none;
+  transition: all 0.16s var(--ease-out);
+}
+
+/* ---------- Taskbar ---------- */
+
+.taskbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  height: var(--taskbar-h);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 3px 3px;
+  background: var(--face);
+  box-shadow: inset 0 1px var(--face-light), inset 0 2px var(--hilite);
+  user-select: none;
+  padding-bottom: max(3px, env(safe-area-inset-bottom));
+}
+
+.start-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+  padding: 2px 8px 2px 5px;
+  border: 0;
+  background: var(--face);
+  color: var(--text);
+  box-shadow: var(--bevel-raised);
+  font-weight: 700;
+  font-size: 15px;
+  cursor: pointer;
+  flex: none;
+}
+.start-btn.is-open { box-shadow: var(--bevel-pressed); padding: 3px 7px 1px 6px; }
+.start-btn:focus-visible { outline: 1px dotted var(--text); outline-offset: -5px; }
+
+.task-list {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  gap: 3px;
+  padding-left: 4px;
+  margin-left: 2px;
+  border-left: 1px solid var(--shadow);
+  box-shadow: inset 1px 0 var(--hilite);
+}
+.task-btn {
+  flex: 0 1 180px;
+  min-width: 40px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 8px;
+  border: 0;
+  background: var(--face);
+  color: var(--text);
+  box-shadow: var(--bevel-raised);
+  cursor: pointer;
+  text-align: left;
+  animation: task-in 0.2s var(--ease-out);
+}
+@keyframes task-in { from { transform: translateY(100%); } }
+.task-btn span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.task-btn.is-active { box-shadow: var(--bevel-pressed); background: var(--dither); font-weight: 600; }
+.task-btn:focus-visible { outline: 1px dotted var(--text); outline-offset: -5px; }
+
+.tray {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px 0 6px;
+  box-shadow: var(--bevel-status);
+  flex: none;
+}
+.tray-btn {
+  display: grid; place-items: center;
+  width: 22px; height: 22px; padding: 0; border: 0; background: none; cursor: pointer;
+}
+.tray-btn img { width: 20px; height: 20px; image-rendering: pixelated; border-radius: 3px; }
+.tray-btn:focus-visible { outline: 1px dotted var(--text); }
+.tray-clock { padding-left: 4px; font-size: 14px; white-space: nowrap; cursor: default; }
+
+/* ---------- Start menu ---------- */
+
+.start-menu {
+  display: flex;
+  padding: 3px;
+  min-width: 0;
+  animation: start-in 0.16s var(--ease-out);
+}
+@keyframes start-in {
+  from { clip-path: inset(100% 0 0 0); transform: translateY(8px); }
+  to { clip-path: inset(0 0 0 0); transform: none; }
+}
+.start-banner {
+  width: 30px;
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+  background: linear-gradient(0deg, var(--title-a), var(--title-b));
+  color: #fff;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font: 22px/1 var(--font-ui);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+.start-banner b { font-weight: 700; }
+.start-banner span { opacity: 0.9; margin-top: 6px; font: italic 700 0.9em var(--font-body); }
+.start-items { display: flex; flex-direction: column; min-width: 220px; }
+.start-items .menu-item { min-height: 40px; gap: 10px; padding: 4px 26px 4px 8px; font-size: 15px; }
+.start-items .menu-item .mi-icon { width: 32px; }
+
+/* ---------- Dim overlay (shut down dialog) ---------- */
+
+.dim {
+  position: fixed;
+  inset: 0;
+  z-index: 2900;
+  background: repeating-conic-gradient(rgba(0, 0, 0, 0.6) 0% 25%, transparent 0% 50%) 0 0 / 2px 2px;
+  animation: fade-in 0.6s ease;
+}
+@keyframes fade-in { from { opacity: 0; } }
+
+/* ---------- Balloon tip (Benji) ---------- */
+
+.balloon {
+  position: fixed;
+  z-index: 2400;
+  right: 12px;
+  bottom: calc(var(--taskbar-h) + 14px);
+  width: min(320px, calc(100vw - 24px));
+  padding: 10px 28px 12px 12px;
+  background: var(--tooltip);
+  color: var(--text);
+  border: 1px solid var(--dark);
+  border-radius: 8px;
+  box-shadow: var(--float-shadow);
+  font: 14px/1.45 var(--font-body);
+  animation: balloon-in 0.35s var(--ease-spring);
+}
+.balloon::after {
+  content: "";
+  position: absolute;
+  right: var(--tail, 60px);
+  bottom: -12px;
+  width: 16px;
+  height: 12px;
+  background: var(--tooltip);
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  filter: drop-shadow(1px 0 0 var(--dark));
+}
+.balloon-title { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; font: 600 14px var(--font-ui); }
+.balloon-title img { width: 24px; height: 24px; border-radius: 4px; image-rendering: pixelated; }
+.balloon-close {
+  position: absolute; top: 6px; right: 6px;
+  width: 18px; height: 18px; padding: 0; border: 0; background: none; cursor: pointer;
+  font: 700 14px/1 var(--font-mono); color: var(--text);
+}
+.balloon-close:hover { box-shadow: var(--bevel-thin-raised); }
+@keyframes balloon-in { from { opacity: 0; transform: translateY(10px) scale(0.96); } }
+
+/* ---------- Boot sequence ---------- */
+
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  display: none;
+  background: #000;
+  color: #c0c0c0;
+  cursor: none;
+}
+.boot.is-on { display: block; }
+.boot-skip {
+  position: absolute; right: 16px; bottom: 14px;
+  font: 18px var(--font-dos); color: #555; cursor: pointer;
+}
+
+.bios {
+  position: absolute;
+  inset: 0;
+  padding: clamp(14px, 3vw, 36px);
+  font: clamp(16px, 2.2vw, 24px)/1.22 var(--font-dos);
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+.bios .hl { color: #fff; }
+.bios .ok { color: #55ff55; }
+.bios .warn { color: #ffff55; }
+.bios-logo {
+  position: absolute;
+  top: clamp(14px, 3vw, 36px);
+  right: clamp(14px, 3vw, 36px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 2px solid #55ffff;
+  color: #55ffff;
+  font: 20px/1 var(--font-dos);
+}
+.bios-logo svg { width: 40px; height: 40px; }
+.bios-footer { position: absolute; left: clamp(14px, 3vw, 36px); bottom: clamp(14px, 3vw, 28px); }
+
+.splash {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(ellipse 22% 10% at 18% 22%, rgba(255, 255, 255, 0.95), transparent 70%),
+    radial-gradient(ellipse 30% 12% at 30% 26%, rgba(255, 255, 255, 0.85), transparent 70%),
+    radial-gradient(ellipse 26% 11% at 78% 18%, rgba(255, 255, 255, 0.9), transparent 70%),
+    radial-gradient(ellipse 34% 13% at 66% 24%, rgba(255, 255, 255, 0.75), transparent 70%),
+    radial-gradient(ellipse 30% 12% at 20% 80%, rgba(255, 255, 255, 0.85), transparent 70%),
+    radial-gradient(ellipse 36% 12% at 84% 78%, rgba(255, 255, 255, 0.9), transparent 70%),
+    radial-gradient(ellipse 22% 9% at 55% 88%, rgba(255, 255, 255, 0.7), transparent 70%),
+    linear-gradient(180deg, #2f6fd6 0%, #5b9ae8 45%, #9cc6f2 100%);
+  animation: splash-in 0.5s ease;
+}
+@keyframes splash-in { from { opacity: 0; } }
+.splash::before {
+  content: "";
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(ellipse 18% 8% at 40% 50%, rgba(255, 255, 255, 0.6), transparent 70%),
+    radial-gradient(ellipse 24% 9% at 85% 45%, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 20% 8% at 8% 55%, rgba(255, 255, 255, 0.6), transparent 70%);
+  animation: clouds-drift 14s linear infinite;
+}
+@keyframes clouds-drift { to { transform: translateX(8%); } }
+.splash-logo { position: relative; display: flex; align-items: center; gap: clamp(12px, 2vw, 28px); color: #fff; }
+.splash-logo svg { width: clamp(72px, 11vw, 140px); height: auto; filter: drop-shadow(4px 4px 0 rgba(0, 0, 0, 0.35)); }
+.splash-sub { font: 500 clamp(14px, 1.6vw, 20px)/1 var(--font-body); letter-spacing: 3px; text-transform: uppercase; opacity: 0.9; }
+.splash-title {
+  font: 700 clamp(44px, 7vw, 96px)/0.95 var(--font-ui);
+  text-shadow: 4px 4px 0 rgba(0, 0, 0, 0.3);
+}
+.splash-title sup { font: italic 700 0.55em var(--font-body); vertical-align: top; margin-left: 8px; color: #ffe066; }
+.splash-tag { margin-top: 10px; font: 500 clamp(14px, 1.5vw, 18px)/1.2 var(--font-body); opacity: 0.95; }
+.splash-bar {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 14px;
+  background: linear-gradient(90deg, #000080, #1084d0, #00c2c7, #7c5cff, #ff5fa2, #ffb000, #000080);
+  background-size: 50% 100%;
+  animation: splash-bar 1.2s linear infinite;
+}
+@keyframes splash-bar { to { background-position: 100% 0; } }
+
+/* ---------- BSOD ---------- */
+
+.bsod {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: #0000aa;
+  color: #fff;
+  font: clamp(18px, 2.3vw, 26px)/1.3 var(--font-dos);
+  cursor: none;
+}
+.bsod-inner { max-width: 820px; }
+.bsod-head { display: table; margin: 0 auto 28px; padding: 0 8px; background: #aaa; color: #0000aa; }
+.bsod p { margin-bottom: 22px; }
+.bsod .cta { text-align: center; }
+.bsod .cursor { animation: blink 0.8s steps(1) infinite; }
+
+/* ---------- Shut down screen ---------- */
+
+.shutdown-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9400;
+  display: grid;
+  place-items: center;
+  background: #000;
+  color: #ff9c1a;
+  font: clamp(26px, 4vw, 52px)/1.2 var(--font-dos);
+  text-align: center;
+  cursor: pointer;
+  padding: 24px;
+}
+.shutdown-screen small { display: block; margin-top: 28px; font-size: 0.5em; color: #777; }
+.shutdown-wait {
+  position: fixed;
+  inset: 0;
+  z-index: 9400;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #1b3f8f, #0b1c44);
+  color: #fff;
+  font: 600 clamp(20px, 3vw, 34px)/1.2 var(--font-ui);
+}
+
+/* ---------- Screensaver ---------- */
+
+.screensaver {
+  position: fixed;
+  inset: 0;
+  z-index: 9200;
+  background: #000;
+  cursor: none;
+  animation: fade-in 0.8s ease;
+}
+.screensaver canvas { width: 100% !important; height: 100% !important; }
+
+/* ---------- Konami party ---------- */
+
+.party-dog {
+  position: fixed;
+  z-index: 9100;
+  width: 72px;
+  height: 72px;
+  border-radius: 10px;
+  image-rendering: pixelated;
+  pointer-events: none;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+}
+
+/* ---------- Mobile ---------- */
+
+@media (max-width: 700px) {
+  .hero {
+    top: auto;
+    bottom: calc(var(--taskbar-h) + 22px);
+    left: 16px;
+    right: 16px;
+    width: auto;
+    transform: none;
+  }
+  .hero-name { font-size: 46px; }
+  .hero-role { font-size: 26px; margin-top: 8px; }
+  .hero-sub { font-size: 14px; }
+  .hero-kicker { font-size: 18px; }
+
+  .desktop-icons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-content: start;
+    gap: 6px 0;
+    padding: 14px 8px;
+  }
+  .desk-icon { position: static; width: auto; transition: none; }
+  .di-label { font-size: 13px; }
+
+  .task-btn { flex: 0 0 44px; justify-content: center; }
+  .task-btn span { display: none; }
+  .task-btn.is-active { flex: 0 1 auto; max-width: 52%; justify-content: flex-start; }
+  .task-btn.is-active span { display: inline; }
+  .tb-btn[aria-label="Maximize"], .tb-btn[aria-label="Restore"] { display: none; }
+  .window.is-maximized .statusbar .grip { display: none; }
+  .tray-clock { font-size: 13px; }
+  .start-items { min-width: 240px; }
+}
+
+@media (max-height: 560px) and (min-width: 701px) {
+  .hero { top: 6%; }
+  .hero-name { font-size: 56px; }
+}
