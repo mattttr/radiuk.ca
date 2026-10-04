@@ -3,47 +3,382 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Benji Social</title>
-<meta name="description" content="Benji Social is the small private tool that publishes posts for @fetchwithbenji, a fetch-obsessed red merle Australian Shepherd.">
+<title>Fetch with Benji</title>
+<meta name="description" content="Benji is a red merle Australian Shepherd with one job: get the ball. Catches, trail days and zoomies on Instagram and YouTube.">
+<link rel="canonical" href="https://radiuk.ca/benji/">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://radiuk.ca/benji/">
+<meta property="og:title" content="Fetch with Benji">
+<meta property="og:description" content="A red merle Aussie with one job: get the ball.">
+<meta property="og:image" content="https://radiuk.ca/benji/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Fetch with Benji: a red merle Aussie lying on a forest boardwalk, grinning.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#008080">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23d6e83e' stroke='%23586812' stroke-width='4'/%3E%3Cpath d='M9 15c11 8 11 26 0 34M55 15c-11 8-11 26 0 34' fill='none' stroke='%23fff' stroke-width='4'/%3E%3C/svg%3E">
+<link rel="preload" href="fonts/LuckiestGuy-Regular.ttf" as="font" type="font/ttf" crossorigin>
 <style>
-  :root { --desk: #008080; --face: #c0c0c0; --hi: #ffffff; --lo: #808080; --dark: #000000; --title: #000080; --ink: #111111; --link: #0000ee; }
+  @font-face { font-family: "Luckiest Guy"; src: url("fonts/LuckiestGuy-Regular.ttf") format("truetype"); font-display: swap; }
+  :root {
+    --desk: #008080; --face: #c0c0c0; --hi: #ffffff; --light: #dfdfdf; --lo: #808080; --dark: #0a0a0a;
+    --title: #000080; --title2: #1084d0; --ink: #111111; --link: #0000ee;
+    --copper: #b5562b; --ball: #d6e83e; --ball-line: #586812;
+    --raised: inset -1px -1px var(--dark), inset 1px 1px var(--light), inset -2px -2px var(--lo), inset 2px 2px var(--hi);
+    --sunken: inset -1px -1px var(--hi), inset 1px 1px var(--lo), inset -2px -2px var(--light), inset 2px 2px var(--dark);
+    --pressed: inset -1px -1px var(--hi), inset 1px 1px var(--dark), inset -2px -2px var(--light), inset 2px 2px var(--lo);
+  }
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
   body { margin: 0; min-height: 100vh; background: var(--desk); color: var(--ink);
-         font: 16px/1.55 "Segoe UI", Tahoma, system-ui, sans-serif; padding: 32px 16px; }
-  .window { max-width: 680px; margin: 0 auto; background: var(--face);
-            border: 2px solid; border-color: var(--hi) var(--dark) var(--dark) var(--hi);
-            box-shadow: inset -1px -1px var(--lo), inset 1px 1px #dfdfdf; }
-  .titlebar { background: linear-gradient(90deg, var(--title), #1084d0); color: #fff; font-weight: 700;
-              padding: 4px 8px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-  .titlebar span:last-child { font-family: monospace; letter-spacing: 2px; }
-  .body { background: #fff; margin: 8px; padding: 20px 22px; border: 2px solid;
-          border-color: var(--lo) var(--hi) var(--hi) var(--lo); }
-  h1 { font-size: 26px; margin: 0 0 6px; }
-  p { margin: 10px 0; }
-  ul { padding-left: 20px; }
+         font: 16px/1.5 Tahoma, "Segoe UI", system-ui, sans-serif; padding: 28px 16px 72px; }
   a { color: var(--link); }
-  .links a { display: inline-block; margin: 4px 10px 4px 0; }
-  .foot { font-size: 13px; color: #444; margin: 0 8px 10px; }
+  img { max-width: 100%; }
+  .desk { max-width: 980px; margin: 0 auto; display: grid; gap: 22px; }
+
+  /* Windows */
+  .window { background: var(--face); box-shadow: var(--raised); padding: 3px; min-width: 0; scroll-margin-top: 16px; }
+  .titlebar { background: linear-gradient(90deg, var(--title), var(--title2)); color: #fff; display: flex;
+              align-items: center; justify-content: space-between; gap: 8px; padding: 3px 3px 3px 6px; min-height: 26px; }
+  .titlebar h2, .titlebar .name { margin: 0; font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 6px;
+                                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .2px; }
+  .titlebar img { width: 16px; height: 16px; border-radius: 2px; }
+  .controls { display: flex; gap: 2px; flex: 0 0 auto; }
+  .controls i { width: 18px; height: 16px; background: var(--face); box-shadow: var(--raised); color: #000;
+                font: 700 11px/16px Tahoma, sans-serif; font-style: normal; text-align: center; }
+  .controls i:last-child { margin-left: 2px; }
+  .menubar { display: flex; gap: 2px; padding: 2px 2px 3px; font-size: 14px; }
+  .menubar span { padding: 1px 7px; }
+  .statusbar { display: flex; gap: 3px; margin-top: 3px; font-size: 13px; }
+  .statusbar span { box-shadow: var(--sunken); padding: 2px 8px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .statusbar span:last-child { flex: 0 1 auto; }
+  .pane { padding: 14px; }
+
+  /* Buttons */
+  .btn { display: inline-flex; align-items: center; gap: 12px; background: var(--face); box-shadow: var(--raised); border: 0;
+         color: #000; text-decoration: none; font: inherit; padding: 8px 16px; cursor: pointer; min-height: 36px; }
+  .btn:active { box-shadow: var(--pressed); }
+  .btn:active > * { transform: translate(1px, 1px); }
+  .btn:focus-visible { outline: 1px dotted #000; outline-offset: -6px; }
+  .btn[disabled] { color: var(--lo); text-shadow: 1px 1px 0 var(--hi); cursor: default; }
+  .btn.big { padding: 10px 18px 10px 12px; }
+  .btn.big b { display: block; font-size: 16px; line-height: 1.2; }
+  .btn.big small { display: block; font-size: 13px; color: #333; line-height: 1.2; }
+  .btn svg { width: 34px; height: 34px; flex: 0 0 auto; }
+
+  /* Hero */
+  .hero-body { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: 22px; padding: 12px; align-items: center; }
+  .frame { margin: 0; box-shadow: var(--sunken); padding: 2px; background: #000; line-height: 0; }
+  .frame img { width: 100%; height: auto; display: block; }
+  h1 { font-family: "Luckiest Guy", Impact, sans-serif; font-weight: 400; margin: 0 0 14px; line-height: .92; text-transform: uppercase; }
+  h1 .small { display: block; font-size: 30px; color: var(--title); letter-spacing: 1px; }
+  h1 .big { display: block; font-size: clamp(76px, 12vw, 116px); color: var(--copper); text-shadow: 4px 4px 0 var(--title); letter-spacing: 1px; }
+  h1 .ballmark { display: inline-block; width: .4em; height: .4em; margin-left: .14em; vertical-align: .08em; }
+  .lede { font-size: 19px; font-weight: 700; margin: 0 0 8px; }
+  .intro p { margin: 0 0 10px; }
+  .links { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+
+  /* Properties */
+  .row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 22px; align-items: start; }
+  .tabs { display: flex; padding: 8px 8px 0; }
+  .tabs span { background: var(--face); padding: 3px 12px 4px; font-size: 14px; position: relative; top: 2px;
+               box-shadow: inset 1px 1px var(--hi), inset -1px 0 var(--dark), inset -2px 0 var(--lo); }
+  .sheet { margin: 0 8px 8px; padding: 14px 16px; box-shadow: var(--raised); }
+  .ident { display: flex; align-items: center; gap: 16px; }
+  .ident img { width: 56px; height: 56px; border-radius: 50%; }
+  .namebox { flex: 1; background: #fff; box-shadow: var(--sunken); padding: 4px 8px; font-size: 15px; }
+  hr { border: 0; border-top: 1px solid var(--lo); border-bottom: 1px solid var(--hi); margin: 12px 0; }
+  dl { display: grid; grid-template-columns: 96px 1fr; gap: 6px 10px; margin: 0; font-size: 15px; }
+  dt { color: #222; }
+  dd { margin: 0; }
+  .attrs { display: grid; grid-template-columns: 96px 1fr; gap: 10px; font-size: 15px; }
+  .attrs div { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+  .attrs label { display: inline-flex; align-items: center; gap: 6px; }
+  .check { width: 13px; height: 13px; background: #fff; box-shadow: var(--sunken); display: inline-grid; place-items: center;
+           font: 700 11px/1 Tahoma, sans-serif; }
+
+  /* fetch.exe */
+  .fetch { display: none; }
+  .js .fetch { display: block; }
+  .field { position: relative; height: 112px; box-shadow: var(--sunken); padding: 2px; overflow: hidden;
+           background: linear-gradient(#bfe3ff 0 46%, #9fd06f 46% 100%); }
+  .field .pup { position: absolute; left: 12px; bottom: 12px; width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; }
+  .field .ball { position: absolute; left: 70px; bottom: 16px; width: 20px; height: 20px; border-radius: 50%;
+                 background: radial-gradient(circle at 35% 35%, #ecf77a, var(--ball) 60%, #b6c62c); border: 1px solid var(--ball-line); }
+  .field .cloud { position: absolute; top: 12px; width: 54px; height: 16px; background: #fff; border-radius: 10px; opacity: .9; }
+  .say { min-height: 3em; margin: 10px 0; font-size: 15px; }
+  .fetch-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+  .counter { box-shadow: var(--sunken); background: #000; color: #3f3; font: 700 15px/1 "Courier New", monospace; padding: 8px 10px; }
+
+  /* My Pictures */
+  .address { display: flex; align-items: center; gap: 6px; padding: 3px 4px; font-size: 14px; }
+  .address span:last-child { flex: 1; background: #fff; box-shadow: var(--sunken); padding: 2px 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .grid { list-style: none; margin: 0; padding: 14px; background: #fff; box-shadow: var(--sunken);
+          display: grid; gap: 16px 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grid a { display: block; color: #000; text-decoration: none; text-align: center; font-size: 13px; padding: 4px; }
+  .grid img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; display: block; margin-bottom: 6px; box-shadow: 0 0 0 1px var(--lo); }
+  .grid a:hover span, .grid a:focus-visible span { background: var(--title); color: #fff; }
+  .grid a:focus-visible { outline: 1px dotted #000; }
+  .grid span { padding: 0 3px; overflow-wrap: anywhere; }
+
+  /* Notepad */
+  .doc { background: #fff; box-shadow: var(--sunken); padding: 14px 16px; font: 15px/1.6 "Lucida Console", "Courier New", monospace; }
+  .doc p { margin: 0 0 12px; }
+  .doc p:last-child { margin: 0; }
+  .fine { color: #555; font-size: 13px; }
+
+  /* Picture viewer */
+  dialog { padding: 3px; border: 0; background: var(--face); box-shadow: var(--raised); max-width: min(92vw, 980px); width: auto; }
+  dialog::backdrop { background: rgba(0, 0, 0, .55); }
+  dialog .viewer { background: #000; box-shadow: var(--sunken); padding: 2px; margin-top: 3px; line-height: 0; }
+  dialog .viewer img { max-height: 76vh; width: auto; max-width: 100%; display: block; margin: 0 auto; }
+  dialog p { margin: 8px 6px 6px; font-size: 14px; }
+  dialog form { margin: 0; }
+  dialog .close { width: 20px; height: 18px; background: var(--face); box-shadow: var(--raised); border: 0;
+                  font: 700 12px/16px Tahoma, sans-serif; padding: 0; cursor: pointer; }
+  dialog .close:active { box-shadow: var(--pressed); }
+
+  /* Taskbar */
+  .taskbar { position: fixed; left: 0; right: 0; bottom: 0; height: 40px; background: var(--face); display: flex; align-items: center;
+             gap: 4px; padding: 4px; box-shadow: inset 0 1px var(--light), inset 0 2px var(--hi); z-index: 5; }
+  .taskbar a { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 10px; color: #000; text-decoration: none;
+               box-shadow: var(--raised); font-size: 14px; white-space: nowrap; }
+  .taskbar a:active { box-shadow: var(--pressed); }
+  .taskbar .start { font-weight: 700; }
+  .taskbar .start img { width: 20px; height: 20px; border-radius: 50%; }
+  .taskbar .tasks { display: flex; gap: 4px; overflow: hidden; flex: 1; min-width: 0; }
+  .taskbar .tasks a { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+  .taskbar .fetch-task { display: none; }
+  .js .taskbar .fetch-task { display: inline-flex; }
+  .clock { box-shadow: var(--sunken); height: 30px; display: inline-flex; align-items: center; gap: 6px; padding: 0 10px;
+           font-size: 14px; white-space: nowrap; }
+  .clock svg { width: 16px; height: 16px; }
+
+  @media (max-width: 760px) {
+    body { padding: 16px 16px 64px; }
+    .hero-body, .row { grid-template-columns: 1fr; }
+    .hero-body { padding: 8px; gap: 16px; }
+    .menubar { display: none; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
+    .taskbar .tasks { display: none; }
+    .clock { margin-left: auto; }
+    .btn.big { flex: 1 1 220px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
+<script>document.documentElement.classList.add("js")</script>
 </head>
 <body>
-  <main class="window">
-    <div class="titlebar"><span>Benji Social</span><span>_ □ ×</span></div>
-    <div class="body">
-      <h1>Benji Social</h1>
-      <p>Benji is a red merle Australian Shepherd who is completely obsessed with fetch. Benji Social is the small,
-         private tool his human uses to schedule and publish Benji's posts.</p>
-      <p>It only works with Benji's own accounts. It isn't a public app: there are no sign-ups, and it never posts,
-         likes, follows or comments anywhere except on Benji's own posts.</p>
-      <p class="links">
-        Find Benji:
-        <a href="https://www.instagram.com/fetchwithbenji/">Instagram</a>
-        <a href="https://www.youtube.com/@fetchwithbenji">YouTube</a>
-        <a href="https://www.tiktok.com/@fetchwithbenji">TikTok</a>
-      </p>
-      <p><a href="privacy.html">Privacy policy</a> · Contact: <a href="mailto:fetchwithbenji@gmail.com">fetchwithbenji@gmail.com</a></p>
+<main class="desk" id="top">
+
+  <section class="window" aria-labelledby="hello">
+    <div class="titlebar">
+      <span class="name"><img src="img/avatar.jpg" alt="">Fetch with Benji</span>
+      <span class="controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
     </div>
-    <p class="foot">Not affiliated with or endorsed by Instagram, Meta, YouTube, Google or TikTok.</p>
-  </main>
+    <div class="menubar" aria-hidden="true"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>V</u>iew</span><span><u>B</u>all</span><span><u>H</u>elp</span></div>
+    <div class="hero-body">
+      <figure class="frame">
+        <img src="img/hero.jpg" width="1080" height="1350" fetchpriority="high"
+             alt="Benji at the front of a boat on a mountain lake, ears blowing in the wind, tongue poking out.">
+      </figure>
+      <div class="intro">
+        <h1 id="hello"><span class="small">Fetch with</span><span class="big">Benji<svg class="ballmark" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="#d6e83e" stroke="#586812" stroke-width="4"/><path d="M9 15c11 8 11 26 0 34M55 15c-11 8-11 26 0 34" fill="none" stroke="#fff" stroke-width="4"/></svg></span></h1>
+        <p class="lede">Hi, I'm Benji. Red merle Australian Shepherd. One job: get the ball.</p>
+        <p>Mid-air catches, trail days, zoomies, boat days and the odd puppy throwback. New posts most days.</p>
+        <div class="links">
+          <a class="btn big" href="https://www.instagram.com/fetchwithbenji/" rel="me noopener">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="ig" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".35" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="2" y="2" width="44" height="44" rx="12" fill="url(#ig)"/><rect x="11" y="11" width="26" height="26" rx="8" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="24" cy="24" r="6.5" fill="none" stroke="#fff" stroke-width="3.5"/><circle cx="32.5" cy="15.5" r="2.2" fill="#fff"/></svg>
+            <span><b>Instagram</b><small>@fetchwithbenji</small></span>
+          </a>
+          <a class="btn big" href="https://www.youtube.com/@fetchwithbenji" rel="me noopener">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="8" width="44" height="32" rx="9" fill="#ff0033"/><path d="M20 17v14l12-7z" fill="#fff"/></svg>
+            <span><b>YouTube</b><small>Shorts, most days</small></span>
+          </a>
+        </div>
+      </div>
+    </div>
+    <div class="statusbar"><span>Ready</span><span>Ball status: missing</span></div>
+  </section>
+
+  <div class="row">
+    <section class="window" id="properties" aria-labelledby="props-title">
+      <div class="titlebar">
+        <h2 id="props-title">Benji Properties</h2>
+        <span class="controls" aria-hidden="true"><i>?</i><i>×</i></span>
+      </div>
+      <div class="tabs" aria-hidden="true"><span>General</span></div>
+      <div class="sheet">
+        <div class="ident"><img src="img/avatar.jpg" width="56" height="56" alt=""><span class="namebox">Benji</span></div>
+        <hr>
+        <dl>
+          <dt>Type:</dt><dd>Very good boy</dd>
+          <dt>Breed:</dt><dd>Australian Shepherd</dd>
+          <dt>Coat:</dt><dd>Red merle: copper, white and a bit of everything</dd>
+          <dt>Eyes:</dt><dd>Amber</dd>
+          <dt>Age:</dt><dd><span id="age">3</span> (born September 2023)</dd>
+        </dl>
+        <hr>
+        <dl>
+          <dt>Location:</dt><dd>Wherever the ball went</dd>
+          <dt>Favourite:</dt><dd>The ball</dd>
+          <dt>Runner-up:</dt><dd>Whoever has the ball</dd>
+        </dl>
+        <hr>
+        <div class="attrs">
+          <span>Attributes:</span>
+          <div>
+            <label><span class="check" aria-hidden="true">✓</span>Ball-obsessed</label>
+            <label><span class="check" aria-hidden="true">✓</span>Trail-tested</label>
+            <label><span class="check" aria-hidden="true"></span>Tired</label>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="window fetch" id="fetch" aria-labelledby="fetch-title">
+      <div class="titlebar">
+        <h2 id="fetch-title">fetch.exe</h2>
+        <span class="controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
+      </div>
+      <div class="pane">
+        <div class="field" aria-hidden="true">
+          <span class="cloud" style="left: 22%"></span><span class="cloud" style="left: 64%; top: 26px; width: 40px"></span>
+          <img class="pup" src="img/avatar.jpg" alt=""><span class="ball"></span>
+        </div>
+        <p class="say" id="say" aria-live="polite">Benji is staring at you. Intensely. He knows you have the ball.</p>
+        <div class="fetch-row">
+          <button class="btn" id="throw" type="button"><span><u>T</u>hrow the ball</span></button>
+          <span class="counter">FETCH COUNT <span id="count">0</span></span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="window" id="pictures" aria-labelledby="pics-title">
+    <div class="titlebar">
+      <h2 id="pics-title">My Pictures</h2>
+      <span class="controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
+    </div>
+    <div class="address" aria-hidden="true"><span>Address</span><span>C:\Benji\My Pictures</span></div>
+    <ul class="grid">
+      <li><a href="img/m62.jpg" data-title="wet_and_happy.jpg"><img src="img/m62-sq.jpg" width="480" height="480" loading="lazy" alt="Benji wading in shallow water, soaked and grinning, with tennis balls floating behind him."><span>wet_and_happy.jpg</span></a></li>
+      <li><a href="img/m1915.jpg" data-title="beach_ball.jpg"><img src="img/m1915-sq.jpg" width="480" height="480" loading="lazy" alt="Benji on rippled wet sand at low tide with a ball in his mouth."><span>beach_ball.jpg</span></a></li>
+      <li><a href="img/m1300.jpg" data-title="river_day.jpg"><img src="img/m1300-sq.jpg" width="480" height="480" loading="lazy" alt="Benji standing in a clear mountain river, with boulders and forest behind him."><span>river_day.jpg</span></a></li>
+      <li><a href="img/m651.jpg" data-title="best_friends.jpg"><img src="img/m651-sq.jpg" width="480" height="480" loading="lazy" alt="Benji lying in a buttercup meadow with his fluffy white friend and a red ball."><span>best_friends.jpg</span></a></li>
+      <li><a href="img/m1022.jpg" data-title="boardwalk.jpg"><img src="img/m1022-sq.jpg" width="480" height="480" loading="lazy" alt="Benji sitting on a forest boardwalk with his mouth open in a happy pant."><span>boardwalk.jpg</span></a></li>
+      <li><a href="img/m645.jpg" data-title="buttercups.jpg"><img src="img/m645-sq.jpg" width="480" height="480" loading="lazy" alt="Benji sitting in a field of yellow buttercups, squinting happily in the sun."><span>buttercups.jpg</span></a></li>
+      <li><a href="img/m1553.jpg" data-title="sea_sit.jpg"><img src="img/m1553-sq.jpg" width="480" height="480" loading="lazy" alt="Benji sitting in shallow sea water with a wet coat and his tongue out, mountains in the distance."><span>sea_sit.jpg</span></a></li>
+      <li><a href="img/m4.jpg" data-title="puppy_me.jpg"><img src="img/m4-sq.jpg" width="480" height="480" loading="lazy" alt="Benji as a fluffy puppy, sitting in his pen and looking up."><span>puppy_me.jpg</span></a></li>
+    </ul>
+    <div class="statusbar"><span>8 object(s)</span><span>Photos by Benji's human</span></div>
+  </section>
+
+  <section class="window" id="about" aria-labelledby="about-title">
+    <div class="titlebar">
+      <h2 id="about-title">About this site - Notepad</h2>
+      <span class="controls" aria-hidden="true"><i>_</i><i>□</i><i>×</i></span>
+    </div>
+    <div class="menubar" aria-hidden="true"><span><u>F</u>ile</span><span><u>E</u>dit</span><span><u>S</u>earch</span><span><u>H</u>elp</span></div>
+    <div class="doc">
+      <p>This page is run by Benji's human.</p>
+      <p>Benji's posts are scheduled with Benji Social, a small private tool his human built. It only posts to
+         Benji's own accounts, and it never likes, follows or comments anywhere else.</p>
+      <p><a href="privacy.html">Privacy policy</a> · <a href="mailto:fetchwithbenji@gmail.com">fetchwithbenji@gmail.com</a></p>
+      <p class="fine">Not affiliated with or endorsed by Instagram, Meta, YouTube, Google or TikTok.</p>
+    </div>
+  </section>
+</main>
+
+<nav class="taskbar" aria-label="Sections">
+  <a class="start" href="#top"><img src="img/avatar.jpg" alt="">Start</a>
+  <span class="tasks">
+    <a href="#properties">Benji Properties</a>
+    <a href="#fetch" class="fetch-task">fetch.exe</a>
+    <a href="#pictures">My Pictures</a>
+    <a href="#about">About</a>
+  </span>
+  <span class="clock"><svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="29" fill="#d6e83e" stroke="#586812" stroke-width="4"/><path d="M9 15c11 8 11 26 0 34M55 15c-11 8-11 26 0 34" fill="none" stroke="#fff" stroke-width="4"/></svg><time id="clock"></time></span>
+</nav>
+
+<dialog id="viewer" aria-labelledby="viewer-title">
+  <div class="titlebar">
+    <span class="name" id="viewer-title">Picture</span>
+    <form method="dialog"><button class="close" aria-label="Close">×</button></form>
+  </div>
+  <div class="viewer"><img id="viewer-img" alt=""></div>
+  <p id="viewer-caption"></p>
+</dialog>
+
+<script>
+(() => {
+  // Age, from his birthday (9 September 2023).
+  const now = new Date();
+  let age = now.getFullYear() - 2023;
+  if (now < new Date(now.getFullYear(), 8, 9)) age -= 1;
+  document.getElementById("age").textContent = age;
+
+  // Taskbar clock.
+  const clock = document.getElementById("clock");
+  const tick = () => { clock.textContent = new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }); };
+  tick();
+  setInterval(tick, 15000);
+
+  // fetch.exe: throw the ball, Benji brings it back. The count is kept in this browser only.
+  const lines = ["Got it! Again?", "AGAIN.", "One more. Then one more.", "I could do this all day.",
+                 "Seriously. All day.", "What if you threw it further?", "Best throw yet. Again."];
+  const field = document.querySelector(".field"), ball = field.querySelector(".ball"), pup = field.querySelector(".pup");
+  const say = document.getElementById("say"), out = document.getElementById("count"), btn = document.getElementById("throw");
+  let count = 0;
+  try { count = parseInt(localStorage.getItem("benji-fetch-count") || "0", 10) || 0; } catch (e) {}
+  out.textContent = count;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches || !ball.animate;
+  // Each step also has a timer, so a paused animation (background tab, power saving) can't stall the game.
+  const go = (el, frames, ms, easing) => Promise.race([
+    el.animate(frames, { duration: ms, easing, fill: "forwards" }).finished,
+    new Promise(done => setTimeout(done, ms + 150)),
+  ]);
+  btn.addEventListener("click", async () => {
+    btn.disabled = true;
+    if (!still) {
+      [ball, pup].forEach(el => el.getAnimations().forEach(a => a.cancel()));
+      const far = field.clientWidth - 110;
+      say.textContent = "Ball is airborne...";
+      await go(ball, [{ transform: "translate(0, 0)" }, { transform: `translate(${far * 0.5}px, -58px)` },
+                      { transform: `translate(${far}px, 0)` }], 700, "ease-out");
+      say.textContent = "Benji is sprinting. Benji has never been faster.";
+      await go(pup, [{ transform: "translateX(0)" }, { transform: `translateX(${far - 30}px)` }], 420, "ease-in");
+      await Promise.all([
+        go(pup, [{ transform: `translateX(${far - 30}px)` }, { transform: "translateX(0)" }], 520, "ease-out"),
+        go(ball, [{ transform: `translate(${far}px, 0)` }, { transform: "translate(0, 0)" }], 520, "ease-out"),
+      ]);
+      [ball, pup].forEach(el => el.getAnimations().forEach(a => a.cancel()));   // home, whatever happened
+    }
+    count += 1;
+    out.textContent = count;
+    try { localStorage.setItem("benji-fetch-count", String(count)); } catch (e) {}
+    say.textContent = lines[(count - 1) % lines.length];
+    btn.disabled = false;
+    btn.focus();
+  });
+
+  // My Pictures: open the full photo in a window.
+  const viewer = document.getElementById("viewer");
+  if (typeof viewer.showModal === "function") {
+    const img = document.getElementById("viewer-img");
+    document.querySelectorAll(".grid a").forEach(a => a.addEventListener("click", e => {
+      e.preventDefault();
+      const thumb = a.querySelector("img");
+      img.src = a.getAttribute("href");
+      img.alt = thumb.alt;
+      document.getElementById("viewer-title").textContent = a.dataset.title + " - Picture Viewer";
+      document.getElementById("viewer-caption").textContent = thumb.alt;
+      viewer.showModal();
+    }));
+    viewer.addEventListener("click", e => { if (e.target === viewer) viewer.close(); });
+    viewer.addEventListener("close", () => { img.removeAttribute("src"); });
+  }
+})();
+</script>
 </body>
 </html>
