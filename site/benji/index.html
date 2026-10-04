@@ -51,7 +51,7 @@
   .menubar span { padding: 1px 7px; }
   .statusbar { display: flex; gap: 3px; margin-top: 3px; font-size: 13px; }
   .statusbar span { box-shadow: var(--sunken); padding: 2px 8px; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .statusbar span:last-child { flex: 0 1 auto; }
+  .statusbar span:last-child, .statusbar .legal { flex: 0 1 auto; }
   .pane { padding: 14px; }
 
   /* Buttons */
@@ -158,7 +158,7 @@
     body { padding: 16px 16px 64px; }
     .hero-body, .row { grid-template-columns: 1fr; }
     .hero-body { padding: 8px; gap: 16px; }
-    .menubar { display: none; }
+    .menubar, .statusbar .ready { display: none; }
     .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
     .taskbar .tasks { display: none; }
     .clock { margin-left: auto; }
@@ -198,7 +198,7 @@
         </div>
       </div>
     </div>
-    <div class="statusbar"><span>Ready</span><span>Ball status: missing</span></div>
+    <div class="statusbar"><span class="ready">Ready</span><span class="legal"><a href="privacy.html">Privacy policy</a> · <a href="terms.html">Terms of use</a></span><span>Ball status: missing</span></div>
   </section>
 
   <div class="row">
@@ -284,7 +284,9 @@
       <p>This page is run by Benji's human.</p>
       <p>Benji's posts are scheduled with Benji Social, a small private tool his human built. It only posts to
          Benji's own accounts, and it never likes, follows or comments anywhere else.</p>
-      <p><a href="privacy.html">Privacy policy</a> · <a href="mailto:fetchwithbenji@gmail.com">fetchwithbenji@gmail.com</a></p>
+      <p>Benji Social uses YouTube API Services. By using Benji Social, users are agreeing to be bound by the
+         <a href="https://www.youtube.com/t/terms">YouTube Terms of Service</a>.</p>
+      <p><a href="privacy.html">Privacy policy</a> · <a href="terms.html">Terms of use</a> · <a href="mailto:fetchwithbenji@gmail.com">fetchwithbenji@gmail.com</a></p>
       <p class="fine">Not affiliated with or endorsed by Instagram, Meta, YouTube, Google or TikTok.</p>
     </div>
   </section>
