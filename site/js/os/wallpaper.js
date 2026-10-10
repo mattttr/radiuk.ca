@@ -18,7 +18,6 @@ export const WALLPAPERS = [
 
 let live = null;
 let token = 0;
-let hoverWired = false;
 
 export function currentWallpaper() {
   return settings.get('wallpaper', 'none');
@@ -54,17 +53,11 @@ export async function setWallpaper(id, { persist = true } = {}) {
         wallpaper: true,
         density: 1,
         hoverTarget: $('#desktop'),
-        pointerAll: true,
+        // Only react to the pointer when it's over bare desktop, not a window.
+        hoverFilter: (e) => !e.target.closest('.window'),
       });
       if (mine !== token) { sketch.remove(); return; }
       live = sketch;
-      if (!hoverWired) {
-        hoverWired = true;
-        // Only react to the pointer when it's over bare desktop, not a window.
-        $('#desktop').addEventListener('pointermove', (e) => {
-          live?.setHovering(!e.target.closest('.window, .taskbar'));
-        });
-      }
     } catch (err) {
       console.error(err);
     }

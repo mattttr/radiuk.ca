@@ -94,11 +94,15 @@ export function open({ from } = {}) {
   line1.addEventListener('input', () => { state.line1 = line1.value; redraw(); });
   line2.addEventListener('input', () => { state.line2 = line2.value; redraw(); });
 
+  const defaultName = (key) => (key === 'img1' ? DEFAULTS.image1 : DEFAULTS.image2).split('/').pop();
+  const fileNames = {};
   const picker = (label, key) => {
-    const name = h('span', { class: 'pablo-file' }, key === 'img1' ? 'benji-sunset.jpg' : 'benji.jpg');
+    const name = h('span', { class: 'pablo-file' }, defaultName(key));
+    fileNames[key] = name;
     const input = h('input', { type: 'file', accept: 'image/*', class: 'sr-only' });
     input.addEventListener('change', async () => {
       const f = input.files?.[0];
+      input.value = ''; // so picking the same file again (e.g. after Reset) still fires "change"
       if (!f) return;
       const url = URL.createObjectURL(f);
       try {
@@ -107,6 +111,8 @@ export function open({ from } = {}) {
         redraw();
       } catch {
         msgbox({ title: 'Pablo', icon: 'error', message: 'That file doesn’t look like a picture I can read.' });
+      } finally {
+        URL.revokeObjectURL(url);
       }
     });
     const browse = h('button', { class: 'btn small', type: 'button', onClick: () => input.click() }, 'Browse...');
@@ -128,6 +134,7 @@ export function open({ from } = {}) {
   const reset = async () => {
     line1.value = state.line1 = DEFAULTS.line1;
     line2.value = state.line2 = DEFAULTS.line2;
+    for (const [key, el] of Object.entries(fileNames)) el.textContent = defaultName(key);
     [state.img1, state.img2] = await Promise.all([loadImage(DEFAULTS.image1), loadImage(DEFAULTS.image2)]);
     redraw();
   };

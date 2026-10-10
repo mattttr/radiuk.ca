@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.radiuk.ca/sitemap.xml
+Sitemap: https://radiuk.ca/sitemap.xml
