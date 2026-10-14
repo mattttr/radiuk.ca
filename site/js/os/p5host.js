@@ -27,11 +27,11 @@ const KEY_EVENTS = ['keyPressed', 'keyReleased', 'keyTyped'];
 /**
  * Mount a sketch.
  * options:
- *   isActive()   whether keyboard events should reach the sketch (focused window)
- *   pointerAll   treat the pointer as "hovering" whenever it's over `hoverTarget`
- *   hoverTarget  element whose hover state counts (defaults to the container)
- *   density      pixel density cap
- *   onFrame(fps) called ~4x per second
+ *   isActive()     whether keyboard events should reach the sketch (focused window)
+ *   hoverTarget    element whose hover state counts (defaults to the container)
+ *   hoverFilter(e) whether a pointer event over `hoverTarget` counts as hovering (default: always)
+ *   density        pixel density cap
+ *   onFrame(fps)   called ~4x per second
  */
 export async function mountSketch(container, id, options = {}) {
   const [P5, mod] = await Promise.all([loadP5(), import(`../sketches/${id}.js`)]);
@@ -109,13 +109,17 @@ export async function mountSketch(container, id, options = {}) {
   const canvas = instance.canvas;
   canvas.style.touchAction = 'none';
 
-  const onEnter = () => { hovering = true; };
+  // Hovering follows pointer movement, not just pointerenter: these listeners only go on
+  // after p5 has loaded, and by then the cursor is often already inside (a sketch window
+  // opens right under the double-click). An enter event fired before that would be missed
+  // and the sketch would ignore the mouse until it left and came back.
+  const onPointer = (e) => { hovering = options.hoverFilter ? options.hoverFilter(e) : true; };
   const onLeave = () => { hovering = false; };
   const onDown = (e) => { if (e.target === canvas) pressedOnCanvas = true; };
   const onUp = () => { setTimeout(() => { pressedOnCanvas = false; }, 0); };
-  hoverTarget.addEventListener('pointerenter', onEnter);
+  hoverTarget.addEventListener('pointerover', onPointer);
+  hoverTarget.addEventListener('pointermove', onPointer);
   hoverTarget.addEventListener('pointerleave', onLeave);
-  if (options.pointerAll) hoverTarget.addEventListener('pointermove', onEnter);
   window.addEventListener('pointerdown', onDown, true);
   window.addEventListener('pointerup', onUp, true);
 
@@ -136,12 +140,11 @@ export async function mountSketch(container, id, options = {}) {
     resume() { instance.loop(); },
     restart() { instance.restart ? instance.restart() : instance.resized?.(instance.width, instance.height); },
     save(name) { instance.saveCanvas(name || id, 'png'); },
-    setHovering(v) { hovering = v; },
     remove() {
       ro.disconnect();
-      hoverTarget.removeEventListener('pointerenter', onEnter);
+      hoverTarget.removeEventListener('pointerover', onPointer);
+      hoverTarget.removeEventListener('pointermove', onPointer);
       hoverTarget.removeEventListener('pointerleave', onLeave);
-      hoverTarget.removeEventListener('pointermove', onEnter);
       window.removeEventListener('pointerdown', onDown, true);
       window.removeEventListener('pointerup', onUp, true);
       instance.remove();

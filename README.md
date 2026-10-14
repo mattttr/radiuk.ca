@@ -2,7 +2,7 @@
 
 The personal site of **Matt Radiuk**, software engineer, built as a tiny Windows 95-style operating system that runs in the browser.
 
-**Live:** https://www.radiuk.ca
+**Live:** https://radiuk.ca
 
 ![Matt Radiuk 95 splash screen](site/img/og.jpg)
 
@@ -64,12 +64,24 @@ python -m http.server 8080 --directory site
 
 1. In the [Amplify console](https://console.aws.amazon.com/amplify/), choose **Create new app → GitHub**, authorize, and pick the `radiuk.ca` repo on the `main` branch.
 2. Amplify detects `amplify.yml`. It has no build step and publishes `site/`. Click **Save and deploy**.
-3. *(Optional)* Under **Hosting → Rewrites and redirects**, add `/<*>` → `/404.html` with type **404 (Rewrite)** for the custom 404 page.
-4. *(Optional)* Under **Hosting → Custom domains**, add `radiuk.ca`. Amplify shows the DNS records to create. If DNS stays on Cloudflare, add the CNAMEs there and set them to **DNS only** (grey cloud) so Amplify can issue its certificate.
+3. Under **Hosting → Rewrites and redirects**, add these rules in this order:
+
+   | Source | Target | Type |
+   | --- | --- | --- |
+   | `https://www.radiuk.ca` | `https://radiuk.ca` | 301 (Redirect - Permanent) |
+   | `/<*>` | `/404.html` | 404 (Rewrite) |
+
+   The apex (`radiuk.ca`) is canonical. The Benji pages and the canonical/OG tags use it, and Google and Meta link to `radiuk.ca/benji/...`. Domain rules can't contain a path (Amplify silently ignores them), but the path is carried over automatically, so `www.radiuk.ca/benji/` lands on `radiuk.ca/benji/`. The 404 rewrite only applies when no file matches.
+4. Under **Hosting → Custom domains**, add `radiuk.ca` with **Manual configuration** (not "Create hosted zone on Route 53", which would move the nameservers off Cloudflare). Keep both `radiuk.ca` and `www`, and turn off Amplify's default apex → www redirect (rule 1 above goes the other way).
+5. DNS stays on Cloudflare. In **DNS → Records**, every record Amplify asks for is a CNAME set to **DNS only** (grey cloud):
+   - the ACM validation record (`_xxxx` → `_yyyy.acm-validations.aws`). Add it first, and **keep it DNS only permanently**, because certificate renewal fails if it's proxied or removed.
+   - `@` and `www` → the `dxxxx.cloudfront.net` target. Cloudflare flattens the apex CNAME automatically.
+
+   If you later turn the Cloudflare proxy on for `@`/`www`, the SSL mode for those hostnames must be **Full (strict)**, never Flexible, or you get a redirect loop. Use a Configuration Rule scoped to the two hostnames rather than changing the zone-wide setting.
 
 Every push to `main` redeploys automatically.
 
-> **Formspree:** if the form has domain restrictions turned on, add the new Amplify domain in the Formspree dashboard.
+> **Formspree:** if the form has domain restrictions turned on, make sure `radiuk.ca` (and the `*.amplifyapp.com` preview domain, for testing) are allowed in the Formspree dashboard.
 
 ## Handy URLs
 

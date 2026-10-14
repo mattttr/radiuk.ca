@@ -34,6 +34,7 @@ html.is-busy, html.is-busy * { cursor: progress !important; }
 .msgbox-row { display: flex; gap: 16px; align-items: flex-start; }
 .msgbox-icon { flex: none; }
 .msgbox-text { font: 15px/1.45 var(--font-body); padding-top: 4px; min-width: 0; overflow-wrap: anywhere; }
+.msgbox-text p { white-space: pre-line; }
 .msgbox-text p + p { margin-top: 10px; }
 .msgbox-buttons { display: flex; justify-content: center; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
 .shutdown-dialog { padding: 16px 14px 12px; }

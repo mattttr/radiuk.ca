@@ -10,7 +10,7 @@ export const profile = {
   roles: ['Software Engineer', 'Problem Solver', 'Creative Developer', 'Backend Builder', 'Cloud Wrangler'],
   tagline: 'Backend · DevOps · AI · Creative coding',
   experience: '5+ years',
-  location: 'British Columbia, Canada', // TODO: confirm (or remove)
+  location: 'Vancouver, BC, Canada',
   github: 'https://github.com/mattttr',
   githubUser: 'mattttr',
   linkedin: 'https://www.linkedin.com/in/matt-radiuk-089ba0170/',
@@ -75,12 +75,12 @@ export const skills = [
 
 // Gallery: files live in /img/gallery/<file>.jpg with thumbnails in /img/gallery/thumbs/.
 export const photos = [
-  { file: 'dubai-marina', title: 'Dubai Marina', caption: 'Dubai Marina, underneath the twist of the Cayan Tower.' }, // TODO: confirm caption
-  { file: 'benji-sunset', title: 'Benji at Sunset', caption: 'Benji, golden hour on the coast.' }, // TODO: confirm caption
+  { file: 'dubai-marina', title: 'Dubai Marina', caption: 'Dubai Marina, underneath the twist of the Cayan Tower.' },
+  { file: 'benji-sunset', title: 'Benji at Sunset', caption: 'Benji, golden hour on the coast.' },
   { file: 'pumpkin-patch', title: 'Pumpkin Patch', caption: 'Test-driving a vintage Case tractor at the pumpkin patch.' },
   { file: 'petra', title: 'Petra', caption: 'The Royal Tombs at Petra, Jordan.' },
-  { file: 'rope-swing', title: 'Rope Swing', caption: 'Lake day. Rope swing 1, gravity 1.' }, // TODO: confirm caption
-  { file: 'paddleboard', title: 'Paddleboard', caption: 'Post-paddle view of the Vancouver skyline.' }, // TODO: confirm caption
+  { file: 'rope-swing', title: 'Rope Swing', caption: 'Lake day. Rope swing 1, gravity 1.' },
+  { file: 'paddleboard', title: 'Paddleboard', caption: 'Post-paddle view of the Vancouver skyline.' },
   { file: 'cenote', title: 'Cenote Dos Ojos', caption: 'A swing break at Cenote Dos Ojos, Mexico.' },
 ];
 
